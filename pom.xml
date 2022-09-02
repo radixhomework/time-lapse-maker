@@ -19,9 +19,9 @@
         <sonar.organization>io.github.radixhomework</sonar.organization>
         <sonar.projectKey>${project.artifactId}</sonar.projectKey>
 
-        <lombok.version>1.18.22</lombok.version>
-        <slf4j.version>1.7.32</slf4j.version>
-        <logback.version>1.2.6</logback.version>
+        <lombok.version>1.18.24</lombok.version>
+        <slf4j.version>2.0.0</slf4j.version>
+        <logback.version>1.2.11</logback.version>
         <pivot.version>2.0.5</pivot.version>
         <humble.version>0.3.0</humble.version>
 
