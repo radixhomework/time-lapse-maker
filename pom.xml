@@ -19,7 +19,7 @@
         <sonar.projectKey>time-lapse-maker</sonar.projectKey>
         <sonar.organization>radixhomework</sonar.organization>
 
-        <lombok.version>1.18.12</lombok.version>
+        <lombok.version>1.18.46</lombok.version>
         <slf4j.version>1.7.30</slf4j.version>
         <logback.version>1.2.3</logback.version>
         <pivot.version>2.0.5</pivot.version>
