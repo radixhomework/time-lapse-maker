@@ -16,7 +16,6 @@
 
     <properties>
         <phase.repackage>package</phase.repackage>
-        <sonar.projectKey>${project.artifactId}</sonar.projectKey>
     </properties>
 
     <dependencies>

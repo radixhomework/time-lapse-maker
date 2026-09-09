@@ -24,10 +24,12 @@ class EnumFrameRateTest {
 
     @Test
     void getValuesReturnsAllRatesInDeclarationOrder() {
+        EnumFrameRate[] rates = EnumFrameRate.values();
         List<String> values = EnumFrameRate.getValues();
-        assertEquals(6, values.getLength());
-        assertEquals("12", values.get(0));
-        assertEquals("96", values.get(5));
+        assertEquals(rates.length, values.getLength());
+        for (int i = 0; i < rates.length; i++) {
+            assertEquals(rates[i].getLabel(), values.get(i));
+        }
     }
 
     @Test

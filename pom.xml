@@ -16,8 +16,9 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <sonar.organization>io.github.radixhomework</sonar.organization>
-        <sonar.projectKey>${project.artifactId}</sonar.projectKey>
+        <sonar.organization>radixhomework</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey>radixhomework_time-lapse-maker</sonar.projectKey>
 
         <lombok.version>1.18.38</lombok.version>
         <slf4j.version>2.0.17</slf4j.version>
