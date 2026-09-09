@@ -13,7 +13,9 @@ import java.util.Arrays;
 public enum EnumFrameRate {
     FR_12("12", 1, 12),
     FR_24("24", 1, 24),
+    FR_30("30", 1, 30),
     FR_48("48", 1, 48),
+    FR_60("60", 1, 60),
     FR_96("96", 1, 96);
 
     @Getter(value = AccessLevel.NONE)

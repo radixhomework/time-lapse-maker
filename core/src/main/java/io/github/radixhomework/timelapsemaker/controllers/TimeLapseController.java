@@ -87,6 +87,9 @@ public class TimeLapseController extends Window implements Bindable {
                 TimeLapseTask task = new TimeLapseTask(sourceDirectory.getText(), outputFile.getText(), progressBar,
                         EnumFrameRate.getByLabel((String) frameRates.getSelectedItem()), status);
                 task.execute(new TimeLapseTaskListener(progressBar, status, buttons));
+                // FIXME: use task.getResult() / task.getFault() / task.isPending() to display a popup message at the end
+                //  Alert.alert(MessageType.INFO, "Time lapse build successfully", controller);
+                //  Alert.alert(MessageType.ERROR, "Error during time lapse building", controller);
             }
         });
     }
