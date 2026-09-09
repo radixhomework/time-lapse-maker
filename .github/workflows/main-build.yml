@@ -1,4 +1,4 @@
-name: Main Build
+name: Main Analysis
 
 on:
   push:
@@ -33,4 +33,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SONAR_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B install org.sonarsource.scanner.maven:sonar-maven-plugin:5.8.0.7211:sonar
+        # Only core is built: it holds all the code. Platform artifacts are produced
+        # by the release workflow when a tag is pushed.
+        run: mvn -B -pl core -am install org.sonarsource.scanner.maven:sonar-maven-plugin:5.8.0.7211:sonar

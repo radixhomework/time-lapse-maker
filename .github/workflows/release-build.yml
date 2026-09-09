@@ -1,0 +1,30 @@
+name: Release Build
+
+on:
+  push:
+    tags: ['*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          cache: maven
+      - name: Maven Build
+        run: mvn -B install
+      - name: Create release with build artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "$GITHUB_REF_NAME" --generate-notes
+          "windows/target/Time_Lapse_Maker-windows.zip"
+          "linux/target/Time_Lapse_Maker-linux.tar.gz"
+          "macos/target/Time_Lapse_Maker-macos.zip"
