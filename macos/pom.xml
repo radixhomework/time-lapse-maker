@@ -38,12 +38,12 @@
             <plugin>
                 <groupId>de.perdian.maven.plugins</groupId>
                 <artifactId>macosappbundler-maven-plugin</artifactId>
-                <version>1.14.0</version>
+                <version>1.21.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.codehaus.plexus</groupId>
                         <artifactId>plexus-archiver</artifactId>
-                        <version>4.2.1</version>
+                        <version>4.10.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.velocity</groupId>
@@ -53,7 +53,7 @@
                 </dependencies>
                 <configuration>
                     <plist>
-                        <JVMMainClassName>org.springframework.boot.loader.JarLauncher</JVMMainClassName>
+                        <JVMMainClassName>io.github.radixhomework.timelapsemaker.TimeLapseMakerApplication</JVMMainClassName>
                         <CFBundleIconFile>src/main/resources/radixhomework.icns</CFBundleIconFile>
                         <CFBundleName>Time Lapse Maker</CFBundleName>
                     </plist>
@@ -72,12 +72,12 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.2.2.RELEASE</version>
+                <version>3.5.3</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.springframework.boot.experimental</groupId>
                         <artifactId>spring-boot-thin-layout</artifactId>
-                        <version>1.0.28.RELEASE</version>
+                        <version>1.0.31.RELEASE</version>
                     </dependency>
                 </dependencies>
                 <configuration>
