@@ -24,6 +24,7 @@
         <logback.version>1.5.18</logback.version>
         <pivot.version>2.0.5</pivot.version>
         <humble.version>0.3.0</humble.version>
+        <junit.version>6.1.3</junit.version>
 
         <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
     </properties>
@@ -91,6 +92,12 @@
                     <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.6.0</version>
             </plugin>
         </plugins>
     </build>
