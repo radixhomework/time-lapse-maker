@@ -37,7 +37,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.5.1</version>
                 <configuration>
                     <finalName>time-lapse-maker-${project.version}</finalName>
                 </configuration>
@@ -46,7 +46,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>3.5.16</version>
                 <configuration>
                     <mainClass>io.github.radixhomework.timelapsemaker.TimeLapseMakerApplication</mainClass>
                     <excludes>
@@ -79,7 +79,7 @@
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
-                <version>2.6.0</version>
+                <version>2.7.0</version>
                 <executions>
                     <execution>
                         <id>windows-pkg</id>

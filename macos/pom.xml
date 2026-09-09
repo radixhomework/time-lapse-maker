@@ -37,12 +37,12 @@
             <plugin>
                 <groupId>de.perdian.maven.plugins</groupId>
                 <artifactId>macosappbundler-maven-plugin</artifactId>
-                <version>1.21.1</version>
+                <version>1.21.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.codehaus.plexus</groupId>
                         <artifactId>plexus-archiver</artifactId>
-                        <version>4.10.0</version>
+                        <version>4.14.0</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.velocity</groupId>
@@ -71,7 +71,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>3.5.16</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.springframework.boot.experimental</groupId>
