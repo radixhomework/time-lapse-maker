@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <lombok.version>1.18.48</lombok.version>
-        <slf4j.version>2.0.19</slf4j.version>
+        <slf4j.version>2.0.20</slf4j.version>
         <logback.version>1.6.4</logback.version>
         <pivot.version>2.0.5</pivot.version>
         <humble.version>0.3.0</humble.version>
