@@ -14,10 +14,6 @@
 
     <name>Time Lapse Maker - macOS</name>
 
-    <properties>
-        <phase.repackage>package</phase.repackage>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
@@ -92,50 +88,9 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>de.perdian.maven.plugins</groupId>
-                <artifactId>macosappbundler-maven-plugin</artifactId>
-                <version>1.21.2</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.plexus</groupId>
-                        <artifactId>plexus-archiver</artifactId>
-                        <version>4.14.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.velocity</groupId>
-                        <artifactId>velocity-tools</artifactId>
-                        <version>2.0</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <plist>
-                        <JVMMainClassName>io.github.radixhomework.timelapsemaker.TimeLapseMakerApplication</JVMMainClassName>
-                        <CFBundleIconFile>src/main/resources/radixhomework.icns</CFBundleIconFile>
-                        <CFBundleName>Time Lapse Maker</CFBundleName>
-                    </plist>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>macos-pkg</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>4.1.1</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.springframework.boot.experimental</groupId>
-                        <artifactId>spring-boot-thin-layout</artifactId>
-                        <version>1.0.31.RELEASE</version>
-                    </dependency>
-                </dependencies>
                 <configuration>
                     <mainClass>io.github.radixhomework.timelapsemaker.TimeLapseMakerApplication</mainClass>
                     <excludes>
@@ -152,6 +107,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <finalName>time-lapse-maker-${project.version}</finalName>
                 </configuration>
                 <executions>
                     <execution>
@@ -163,27 +119,127 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven-assembly-plugin.version}</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>assembly/build.xml</descriptor>
-                    </descriptors>
-                    <finalName>Time_Lapse_Maker</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>zip-phase</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
+
+    <!-- Self-contained bundle: built only when running on macOS, since jpackage
+         produces images for the platform it runs on. -->
+    <profiles>
+        <profile>
+            <id>bundle-macos</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>clean-app-image</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <delete dir="${project.build.directory}/app-image" quiet="true"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>stage-jpackage-input</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/jpackage-input</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>time-lapse-maker-${project.version}.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.6.4</version>
+                        <executions>
+                            <execution>
+                                <id>jpackage</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${java.home}/bin/jpackage</executable>
+                                    <arguments>
+                                        <argument>--type</argument>
+                                        <argument>app-image</argument>
+                                        <argument>--name</argument>
+                                        <argument>Time Lapse Maker</argument>
+                                        <argument>--input</argument>
+                                        <argument>${project.build.directory}/jpackage-input</argument>
+                                        <argument>--main-jar</argument>
+                                        <argument>time-lapse-maker-${project.version}.jar</argument>
+                                        <!-- The fat jar entry point is the Spring Boot loader -->
+                                        <argument>--main-class</argument>
+                                        <argument>org.springframework.boot.loader.launch.JarLauncher</argument>
+                                        <argument>--add-modules</argument>
+                                        <argument>java.base,java.desktop,java.logging,java.scripting,java.xml,java.sql,java.management</argument>
+                                        <argument>--icon</argument>
+                                        <argument>${project.basedir}/src/main/resources/radixhomework.icns</argument>
+                                        <argument>--dest</argument>
+                                        <argument>${project.build.directory}/app-image</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>${maven-assembly-plugin.version}</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly/build.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <finalName>Time_Lapse_Maker-macos-selfcontained</finalName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>zip-phase</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

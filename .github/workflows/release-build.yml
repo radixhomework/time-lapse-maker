@@ -8,8 +8,30 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  create-release:
     runs-on: ubuntu-latest
+    steps:
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes
+
+  bundle:
+    needs: create-release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            module: windows
+            archive: windows/target/Time_Lapse_Maker-windows-selfcontained.zip
+          - os: ubuntu-latest
+            module: linux
+            archive: linux/target/Time_Lapse_Maker-linux-selfcontained.zip
+          - os: macos-latest
+            module: macos
+            archive: macos/target/Time_Lapse_Maker-macos-selfcontained.zip
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
       - name: Set up JDK 25
@@ -19,12 +41,8 @@ jobs:
           distribution: 'zulu'
           cache: maven
       - name: Maven Build
-        run: mvn -B install
-      - name: Create release with build artifacts
+        run: mvn -B -pl ${{ matrix.module }} -am package
+      - name: Upload self-contained archive to the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: >
-          gh release create "$GITHUB_REF_NAME" --generate-notes
-          "windows/target/Time_Lapse_Maker-windows.zip"
-          "linux/target/Time_Lapse_Maker-linux.tar.gz"
-          "macos/target/Time_Lapse_Maker-macos.zip"
+        run: gh release upload "$GITHUB_REF_NAME" --clobber "${{ matrix.archive }}"
