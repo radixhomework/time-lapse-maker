@@ -2,95 +2,183 @@ package io.github.radixhomework.timelapsemaker.controllers;
 
 import io.github.radixhomework.timelapsemaker.enums.EnumFrameRate;
 import io.github.radixhomework.timelapsemaker.enums.EnumOutputFormat;
-import io.github.radixhomework.timelapsemaker.events.ChooseSourceEvent;
-import io.github.radixhomework.timelapsemaker.events.ChooseTargetEvent;
-import io.github.radixhomework.timelapsemaker.events.SelectOutputFormatEvent;
 import io.github.radixhomework.timelapsemaker.services.TimeLapseTask;
-import io.github.radixhomework.timelapsemaker.services.TimeLapseTaskListener;
 import io.github.radixhomework.timelapsemaker.utils.GuiUtils;
-import org.apache.pivot.beans.BXML;
-import org.apache.pivot.beans.Bindable;
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.util.Resources;
-import org.apache.pivot.wtk.*;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
+import lombok.extern.slf4j.Slf4j;
 
-import java.net.URL;
-import java.util.ArrayList;
+import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
-public class TimeLapseController extends Window implements Bindable {
+@Slf4j
+public class TimeLapseController {
 
-    private static final List<Component> buttons = new ArrayList<>();
-    @BXML
-    private TextInput sourceDirectory;
-    @BXML
-    private PushButton chooseSource;
-    @BXML
-    private TextInput outputFile;
-    @BXML
-    private PushButton chooseTarget;
-    @BXML
-    private ListButton outputFormats;
-    @BXML
-    private ListButton frameRates;
-    @BXML
-    private TableView tableView;
-    @BXML
+    @FXML
+    private TextField sourceDirectory;
+    @FXML
+    private Button chooseSource;
+    @FXML
+    private TextField outputFile;
+    @FXML
+    private Button chooseTarget;
+    @FXML
+    private ChoiceBox<String> outputFormats;
+    @FXML
+    private ChoiceBox<String> frameRates;
+    @FXML
+    private ListView<String> photoList;
+    @FXML
     private Label status;
-    @BXML
-    private Meter progressBar;
-    @BXML
-    private PushButton make;
-    @BXML
-    private PushButton exit;
+    @FXML
+    private ProgressBar progressBar;
+    @FXML
+    private Button make;
+    @FXML
+    private Button exit;
 
-    @Override
-    public void initialize(Map<String, Object> namespace, URL location, Resources resources) {
-        // Filling components list to disable during time lapse assembling
-        buttons.add(sourceDirectory);
-        buttons.add(chooseSource);
-        buttons.add(outputFile);
-        buttons.add(chooseTarget);
-        buttons.add(outputFormats);
-        buttons.add(frameRates);
-        buttons.add(tableView);
-        buttons.add(make);
-        buttons.add(exit);
+    private List<Node> inputs;
 
-        // Filling output formats ant frame rates drop-downs
-        outputFormats.setListData(EnumOutputFormat.getValues());
-        outputFormats.setSelectedItem(EnumOutputFormat.DEFAULT_VALUE);
+    @FXML
+    private void initialize() {
+        // Built here rather than in the field initializer: @FXML fields are injected after construction
+        inputs = List.of(sourceDirectory, chooseSource, outputFile, chooseTarget,
+                outputFormats, frameRates, photoList, make, exit);
 
-        frameRates.setListData(EnumFrameRate.getValues());
-        frameRates.setSelectedItem(EnumFrameRate.DEFAULT_VALUE);
+        outputFormats.setItems(FXCollections.observableArrayList(EnumOutputFormat.getValues()));
+        outputFormats.setValue(EnumOutputFormat.DEFAULT_VALUE);
 
-        // Adding events on buttons and drop-downs
-        chooseSource.getButtonPressListeners()
-                .add(new ChooseSourceEvent(TimeLapseController.this, sourceDirectory, tableView));
+        frameRates.setItems(FXCollections.observableArrayList(EnumFrameRate.getValues()));
+        frameRates.setValue(EnumFrameRate.DEFAULT_VALUE);
 
-        ChooseTargetEvent chooseTargetEvent = new ChooseTargetEvent(TimeLapseController.this, outputFile,
-                (String) outputFormats.getSelectedItem());
-        chooseTarget.getButtonPressListeners().add(chooseTargetEvent);
+        chooseSource.setOnAction(event -> onChooseSource());
+        chooseTarget.setOnAction(event -> onChooseTarget());
 
-        outputFormats.getListButtonSelectionListeners().add(new SelectOutputFormatEvent(TimeLapseController.this,
-                outputFile, chooseTargetEvent));
+        outputFormats.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> onOutputFormatChanged(oldValue, newValue));
 
-        exit.getButtonPressListeners().add(button -> System.exit(0));
+        make.setOnAction(event -> onMake());
+        exit.setOnAction(event -> Platform.exit());
+    }
 
-        make.getButtonPressListeners().add(button -> {
-            if (sourceDirectory.getText().isEmpty()) {
-                Alert.alert(MessageType.ERROR, "Source directory cannot be empty", TimeLapseController.this);
-            } else if (outputFile.getText().isEmpty()) {
-                Alert.alert(MessageType.ERROR, "Destination file cannot be empty", TimeLapseController.this);
-            } else {
-                GuiUtils.changeComponentsState(buttons, false);
-                TimeLapseTask task = new TimeLapseTask(sourceDirectory.getText(), outputFile.getText(), progressBar,
-                        EnumFrameRate.getByLabel((String) frameRates.getSelectedItem()), status);
-                task.execute(new TimeLapseTaskListener(progressBar, status, buttons));
-                // FIXME: use task.getResult() / task.getFault() / task.isPending() to display a popup message at the end
-                //  Alert.alert(MessageType.INFO, "Time lapse build successfully", controller);
-                //  Alert.alert(MessageType.ERROR, "Error during time lapse building", controller);
-            }
-        });
+    private void onChooseSource() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Choose source directory");
+        File currentDirectory = new File(sourceDirectory.getText());
+        if (currentDirectory.isDirectory()) {
+            directoryChooser.setInitialDirectory(currentDirectory);
+        }
+
+        File selected = directoryChooser.showDialog(currentWindow());
+        if (selected == null) {
+            return;
+        }
+
+        log.info("Loading images from directory {}", selected.getAbsolutePath());
+        sourceDirectory.setText(selected.getAbsolutePath());
+        File[] files = selected.listFiles();
+        List<String> paths = files == null ? List.of() : Arrays.stream(files)
+                .sorted()
+                .map(File::getAbsolutePath)
+                .toList();
+        photoList.setItems(FXCollections.observableArrayList(paths));
+    }
+
+    private void onChooseTarget() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose output file");
+        EnumOutputFormat outputFormat = EnumOutputFormat.findByLabel(outputFormats.getValue());
+
+        File currentFile = new File(outputFile.getText());
+        File parentDirectory = currentFile.getParentFile();
+        if (parentDirectory != null && parentDirectory.isDirectory()) {
+            fileChooser.setInitialDirectory(parentDirectory);
+        }
+        if (!currentFile.getName().isEmpty()) {
+            fileChooser.setInitialFileName(currentFile.getName());
+        }
+
+        File selected = fileChooser.showSaveDialog(currentWindow());
+        if (selected == null) {
+            return;
+        }
+
+        // Append the extension when missing from the chosen file name
+        if (!selected.getName().endsWith(outputFormat.getExtension())) {
+            selected = new File(selected.getAbsolutePath().concat(outputFormat.getExtension()));
+        }
+
+        log.info("Setting output file to {}", selected.getAbsolutePath());
+        GuiUtils.updateTextInput(outputFile, selected.getAbsolutePath());
+    }
+
+    private void onOutputFormatChanged(String oldValue, String newValue) {
+        if (outputFile.getText().isEmpty() || oldValue == null || newValue == null) {
+            return;
+        }
+        EnumOutputFormat oldFormat = EnumOutputFormat.findByLabel(oldValue);
+        EnumOutputFormat newFormat = EnumOutputFormat.findByLabel(newValue);
+        GuiUtils.updateTextInput(outputFile, outputFile.getText().replace(
+                oldFormat.getExtension(), newFormat.getExtension()));
+    }
+
+    private void onMake() {
+        if (sourceDirectory.getText().isEmpty()) {
+            alert("Source directory cannot be empty");
+        } else if (outputFile.getText().isEmpty()) {
+            alert("Destination file cannot be empty");
+        } else {
+            GuiUtils.changeComponentsState(inputs, false);
+
+            TimeLapseTask task = new TimeLapseTask(sourceDirectory.getText(), outputFile.getText(),
+                    EnumFrameRate.getByLabel(frameRates.getValue()));
+            progressBar.progressProperty().bind(task.progressProperty());
+            status.textProperty().bind(task.messageProperty());
+            task.setOnSucceeded(event -> {
+                unbindTask(task);
+                status.setText("Done");
+                GuiUtils.changeComponentsState(inputs, true);
+            });
+            task.setOnFailed(event -> {
+                unbindTask(task);
+                status.setText("Error");
+                GuiUtils.changeComponentsState(inputs, true);
+                log.error("Time lapse building failed", task.getException());
+            });
+
+            Thread thread = new Thread(task, "time-lapse-task");
+            thread.setDaemon(true);
+            thread.start();
+        }
+    }
+
+    private void unbindTask(TimeLapseTask task) {
+        progressBar.progressProperty().unbind();
+        status.textProperty().unbind();
+        progressBar.setProgress(0);
+    }
+
+    private void alert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+        alert.setHeaderText(message);
+        alert.showAndWait();
+    }
+
+    private Window currentWindow() {
+        return chooseSource.getScene() != null ? chooseSource.getScene().getWindow() : null;
     }
 }
