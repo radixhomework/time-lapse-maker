@@ -30,6 +30,63 @@
             <artifactId>humble-video-arch-x86_64-w64-mingw32</artifactId>
             <version>${humble.version}</version>
         </dependency>
+
+        <!--
+            JavaFX runtime for Windows. All four artifacts are declared explicitly with the win
+            classifier and transitives are excluded: the classified POMs otherwise pull
+            classifier-less markers that resolve to the build machine's platform.
+        -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>win</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>win</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>win</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>win</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>
@@ -94,7 +151,7 @@
                             <outfile>${project.build.directory}/Time Lapse Maker.exe</outfile>
                             <icon>src/main/resources/radixhomework.ico</icon>
                             <jre>
-                                <minVersion>${java.version}</minVersion>
+                                <minVersion>25</minVersion>
                             </jre>
                         </configuration>
                     </execution>
