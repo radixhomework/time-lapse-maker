@@ -7,8 +7,12 @@ until then, `openspec/config.yaml` carries the project context.)
 
 ## Commit policy
 
-- **Never commit or push unless the user explicitly asked for it.**
-  Finishing a task or passing tests is never consent to commit.
+- **Commit and push only on the user's explicit demand.** Finishing a
+  task or passing tests is never consent to commit.
+- **Sole exception — quality-check rounds**: when the user asks for a
+  quality check (or when the quality-fix loop below is running), the agent
+  is autonomous: it commits and pushes its fixes on its own so the fresh
+  analyses (Sonar, CI) run, without asking each time.
 - If the user asks to hold for local testing, report "done, ready to test"
   and stop — don't ask again; wait for an explicit go.
 - When the working tree contains files the agent did not create, inspect
@@ -22,6 +26,7 @@ until then, `openspec/config.yaml` carries the project context.)
   prefixes are **not** used in this repo.
 - Feature work happens on `feature/*` branches opened as PRs — the CI
   triggers on `feature/*`, so other prefixes are invisible to it.
+  Quality-fix iterations commit and push on the same branch/PR.
 - Versions are managed by hand in the five POMs (parent + 4 modules'
   parent references); releases are cut by pushing a tag.
 
@@ -52,6 +57,12 @@ Sonar integration was removed); don't wait on those checks.
 
 Fix what was found, push, wait for fresh CI runs, then re-check — repeat
 until clean.
+
+**During these fix/verify rounds the agent is autonomous**: it commits and
+pushes each fix itself (this is the only case where committing without an
+explicit user demand is allowed — see Commit policy), within the
+quality-check scope only. It does not use that autonomy to commit anything
+unrelated to the findings.
 
 **Stop rule: 3 iterations maximum, autonomously.** After 3 fix/verify
 iterations, stop and report remaining findings and what was tried; wait for
