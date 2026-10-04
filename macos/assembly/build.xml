@@ -2,7 +2,7 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
 
-    <id>macos</id>
+    <id>macos-selfcontained</id>
     <includeBaseDirectory>false</includeBaseDirectory>
 
     <formats>
@@ -12,10 +12,7 @@
     <fileSets>
         <fileSet>
             <outputDirectory>.</outputDirectory>
-            <directory>target/</directory>
-            <includes>
-                <include>*.app/**</include>
-            </includes>
+            <directory>target/app-image</directory>
         </fileSet>
     </fileSets>
 </assembly>

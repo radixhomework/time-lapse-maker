@@ -1,8 +1,9 @@
 package io.github.radixhomework.timelapsemaker.enums;
 
 import io.github.radixhomework.timelapsemaker.exception.EnumValueNotFoundException;
-import org.apache.pivot.collections.List;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,7 +36,7 @@ class EnumOutputFormatTest {
     @Test
     void getValuesReturnsAllLabelsInDeclarationOrder() {
         List<String> values = EnumOutputFormat.getValues();
-        assertEquals(2, values.getLength());
+        assertEquals(2, values.size());
         assertEquals(EnumOutputFormat.MP4.getLabel(), values.get(0));
         assertEquals(EnumOutputFormat.AVI.getLabel(), values.get(1));
     }

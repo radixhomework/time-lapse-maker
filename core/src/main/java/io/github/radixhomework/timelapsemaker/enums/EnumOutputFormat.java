@@ -5,10 +5,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.pivot.collections.ArrayList;
-import org.apache.pivot.collections.List;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Getter
@@ -36,9 +35,7 @@ public enum EnumOutputFormat {
     }
 
     public static List<String> getValues() {
-        List<String> formats = new ArrayList<>();
-        Arrays.stream(EnumOutputFormat.values()).forEach(value -> formats.add(value.getLabel()));
-        return formats;
+        return Arrays.stream(EnumOutputFormat.values()).map(EnumOutputFormat::getLabel).toList();
     }
 
     public boolean matches(String label) {
