@@ -149,12 +149,12 @@ public class TimeLapseController {
             progressBar.progressProperty().bind(task.progressProperty());
             status.textProperty().bind(task.messageProperty());
             task.setOnSucceeded(event -> {
-                unbindTask(task);
+                unbindTask();
                 status.setText("Done");
                 GuiUtils.changeComponentsState(inputs, true);
             });
             task.setOnFailed(event -> {
-                unbindTask(task);
+                unbindTask();
                 status.setText("Error");
                 GuiUtils.changeComponentsState(inputs, true);
                 log.error("Time lapse building failed", task.getException());
@@ -166,7 +166,7 @@ public class TimeLapseController {
         }
     }
 
-    private void unbindTask(TimeLapseTask task) {
+    private void unbindTask() {
         progressBar.progressProperty().unbind();
         status.textProperty().unbind();
         progressBar.setProgress(0);
