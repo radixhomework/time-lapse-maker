@@ -37,7 +37,7 @@
             <plugin>
                 <groupId>de.perdian.maven.plugins</groupId>
                 <artifactId>macosappbundler-maven-plugin</artifactId>
-                <version>1.21.2</version>
+                <version>1.21.3</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.codehaus.plexus</groupId>
