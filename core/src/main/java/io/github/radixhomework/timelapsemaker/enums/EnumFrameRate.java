@@ -3,10 +3,9 @@ package io.github.radixhomework.timelapsemaker.enums;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.pivot.collections.ArrayList;
-import org.apache.pivot.collections.List;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -35,8 +34,6 @@ public enum EnumFrameRate {
     }
 
     public static List<String> getValues() {
-        List<String> frameRates = new ArrayList<>();
-        Arrays.stream(EnumFrameRate.values()).forEach(value -> frameRates.add(value.getLabel()));
-        return frameRates;
+        return Arrays.stream(EnumFrameRate.values()).map(EnumFrameRate::getLabel).toList();
     }
 }

@@ -1,0 +1,54 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+context: |
+  Time Lapse Maker — Java 17 desktop app that assembles a folder of photos (JPG/PNG)
+  into a time-lapse video (MP4/AVI).
+
+  Tech stack:
+  - Maven multi-module: core (all application logic), windows/linux/macos (packaging only)
+  - GUI: Apache Pivot (WTK/Terra), UI declared in core/src/main/resources/views/main.bxml
+  - Video encoding: Humble Video (FFmpeg bindings), frame-by-frame encoding in TimeLapseTask
+  - Logging: SLF4J 2.0.x + Logback 1.6.x; Lombok for boilerplate
+  - Tests: JUnit Jupiter 6 in core/src/test, run by maven-surefire-plugin
+
+  Conventions:
+  - Commits: short imperative or gerund summaries, optional body, no signature footers
+  - Feature work through PRs; small config/version changes may be pushed directly to main
+  - CI: feature/* and PRs get a full build; pushes to main build core only (no artifacts);
+    tag pushes trigger the release workflow that attaches platform artifacts to a GitHub release
+  - Versions are managed by hand in the five POMs (parent + 4 modules' parent references)
+
+  Domain notes:
+  - Frame rates (12-96 fps) and output formats (MPEG4, AVI) are enum-driven
+    (EnumFrameRate, EnumOutputFormat), looked up by label
+  - Image type detection uses Files.probeContentType (EnumImageType: JPG, PNG)
+  - Known quirk: EnumImageType.isAllowed throws EnumValueNotFoundException instead of
+    returning false for unknown types, which aborts the whole time-lapse if a stray
+    non-image file is present in the photos directory
+  - packaging: launch4j (.exe) for Windows, tar.gz + launcher script for Linux,
+    macosappbundler (.app) with spring-boot-thin-layout for macOS
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

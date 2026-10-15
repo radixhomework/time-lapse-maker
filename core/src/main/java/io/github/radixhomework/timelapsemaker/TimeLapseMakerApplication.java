@@ -1,12 +1,14 @@
 package io.github.radixhomework.timelapsemaker;
 
-import io.github.radixhomework.timelapsemaker.config.TimeLapseMaker;
-import org.apache.pivot.wtk.DesktopApplicationContext;
+import javafx.application.Application;
 
+/**
+ * Launcher-pattern entry point: a plain main class is required so JavaFX can start
+ * from an ordinary classpath (fat jar) without missing runtime components errors.
+ */
 public class TimeLapseMakerApplication {
 
     public static void main(String[] args) {
-        DesktopApplicationContext.main(TimeLapseMaker.class, args);
+        Application.launch(TimeLapseApplication.class, args);
     }
-
 }

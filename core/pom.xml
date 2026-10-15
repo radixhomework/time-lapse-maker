@@ -22,6 +22,28 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--
+            OpenJFX artifacts require a platform classifier: the classifier-less jar is empty.
+            Classes are platform-independent bytecode, so any classifier compiles everywhere;
+            'linux' is pinned for deterministic builds. Scope provided: the packaging modules
+            re-declare their own platform's runtime artifacts.
+        -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>linux</classifier>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>linux</classifier>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>

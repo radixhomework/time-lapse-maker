@@ -1,7 +1,8 @@
 package io.github.radixhomework.timelapsemaker.enums;
 
-import org.apache.pivot.collections.List;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -26,7 +27,7 @@ class EnumFrameRateTest {
     void getValuesReturnsAllRatesInDeclarationOrder() {
         EnumFrameRate[] rates = EnumFrameRate.values();
         List<String> values = EnumFrameRate.getValues();
-        assertEquals(rates.length, values.getLength());
+        assertEquals(rates.length, values.size());
         for (int i = 0; i < rates.length; i++) {
             assertEquals(rates[i].getLabel(), values.get(i));
         }

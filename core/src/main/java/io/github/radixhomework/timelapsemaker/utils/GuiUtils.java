@@ -1,9 +1,11 @@
 package io.github.radixhomework.timelapsemaker.utils;
 
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.TextInputControl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.pivot.wtk.*;
 
 import java.util.List;
 
@@ -11,26 +13,16 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GuiUtils {
 
-    public static void updateProgressBar(Meter progressBar, double percentage) {
-        log.debug("Updating meter {} to {}", progressBar.getName(), percentage);
-        ApplicationContext.queueCallback(() -> progressBar.setPercentage(percentage));
+    public static void updateTextInput(TextInputControl input, String value) {
+        log.debug("Updating text input to {}", value);
+        Platform.runLater(() -> input.setText(value));
     }
 
-    public static void updateLabel(Label label, String value) {
-        log.debug("Updating label {} to {}", label.getName(), value);
-        ApplicationContext.queueCallback(() -> label.setText(value));
-    }
-
-    public static void updateTextInput(TextInput input, String value) {
-        log.debug("Updating text input {} to {}", input.getName(), value);
-        ApplicationContext.queueCallback(() -> input.setText(value));
-    }
-
-    public static void changeComponentsState(List<Component> components, boolean enable) {
+    public static void changeComponentsState(List<Node> components, boolean enable) {
         String action = enable ? "Enabling" : "Disabling";
-        components.forEach(component -> ApplicationContext.queueCallback(() -> {
-            log.debug("{} component {}", action, component.getName());
-            component.setEnabled(enable);
+        components.forEach(component -> Platform.runLater(() -> {
+            log.debug("{} component", action);
+            component.setDisable(!enable);
         }));
     }
 }
